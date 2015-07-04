@@ -1,0 +1,15 @@
+- sass.worker.js is munged by jspm at install
+  https://github.com/theefer/plugin-sass/issues/1
+  https://github.com/jspm/jspm-cli/issues/906
+
+- "ws" dependency not in sass package.json but required to bundle
+  https://github.com/medialize/sass.js/issues/34
+ 
+- Use node-sass when bundling for better performance instead of sass.js?
+  There are issues with using node-sass though, including missing package.json when installed via JSPM.
+
+- Use mincss, or import behaviour from css plugin?
+
+- Source maps
+
+- Errors
