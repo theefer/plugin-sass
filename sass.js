@@ -1,11 +1,5 @@
 if (typeof window !== 'undefined') {
   var Sass = require('sass.js/dist/sass');
-
-  // tell Sass.js where it can find the worker,
-  // url is relative to document.URL - i.e. outside of whatever
-  // Require or Browserify et al do for you
-  // Sass.setWorkerUrl('/jspm_packages/npm/sass.js@0.9.2/dist/sass.worker.js');
-
   var sass = new Sass();
 
   var head = document.getElementsByTagName('head')[0];
@@ -19,7 +13,7 @@ if (typeof window !== 'undefined') {
     }
   }
 
-  var loadStyle = function(url) {
+  function loadStyle(url) {
     return new Promise(function(resolve, reject) {
       var request = new XMLHttpRequest();
       request.open('GET', url, true);
