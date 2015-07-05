@@ -4,5 +4,12 @@
   "registry": "jspm",
   "dependencies": {
     "sass.js": "npm:sass.js@^0.9.2"
+  },
+  "overrides": {
+    "npm:sass.js@0.9.2": {
+      "map": {
+        "ws": "@empty"
+      }
+    }
   }
 }
