@@ -68,7 +68,7 @@ function fetchText(url) {
       if (request.status >= 200 && request.status < 400) {
         resolve(request.responseText);
       } else {
-        reject(new Error('Request error with status ' + request.status));
+        reject(new Error('Request error for "' +url+ '" with status ' + request.status));
       }
     };
 
@@ -94,8 +94,14 @@ function loadStyle(url) {
   return fetchText(url).then(function(data) {
     return new Promise(function(resolve, reject) {
       sass.compile(data, function(result) {
-        injectStyle(result.text, url);
-        resolve('');
+        var successful = result.status === 0;
+        if (successful) {
+          injectStyle(result.text, url);
+          resolve('');
+        } else {
+          // FIXME: not properly bubbling to System?
+          reject(result.formatted);
+        }
       });
     });
   });
