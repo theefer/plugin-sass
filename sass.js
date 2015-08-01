@@ -2,6 +2,18 @@ if (typeof window !== 'undefined') {
   var Sass = require('sass.js/dist/sass');
   var sass = new Sass();
 
+  sass.importer(function(request, done) {
+    // TODO: relative to importing sass file
+    //       see https://github.com/medialize/sass.js#using-the-sassjs-api
+    var url = request.current;
+    fetchText(url).then(function(text) {
+      done({path: url, content: text});
+    }, function(error) {
+      done({path: url, error: error.message});
+    });
+  });
+
+
   var head = document.getElementsByTagName('head')[0];
 
   // get all injected style tags in the page
@@ -12,40 +24,6 @@ if (typeof window !== 'undefined') {
       styleIds.push(styles[i].getAttribute("data-href"));
     }
   }
-
-  function loadStyle(url) {
-    return new Promise(function(resolve, reject) {
-      var request = new XMLHttpRequest();
-      request.open('GET', url, true);
-
-      request.onload = function() {
-        if (request.status >= 200 && request.status < 400) {
-          var data = request.responseText;
-
-          sass.compile(data, function(result) {
-            // inject it into the head as a style tag
-            var style = document.createElement('style');
-            style.textContent = result.text;
-            style.setAttribute('type', 'text/css');
-            style.setAttribute('data-type', 'text/scss');
-            style.setAttribute('data-href', url);
-            head.appendChild(style);
-            resolve('');
-          });
-
-        } else {
-          reject();
-        }
-      };
-
-      request.onerror = function(e) {
-        reject(e);
-      };
-
-      request.send();
-    });
-  };
-
 
   function fetch(load) {
     // don't reload styles loaded in the head
@@ -78,3 +56,58 @@ if (typeof window !== 'undefined') {
   exports.translate = translate;
   exports.bundle = bundle;
 }
+
+
+
+function fetchText(url) {
+  return new Promise(function(resolve, reject) {
+    var request = new XMLHttpRequest();
+    request.open('GET', url, true);
+
+    request.onload = function() {
+      if (request.status >= 200 && request.status < 400) {
+        resolve(request.responseText);
+      } else {
+        reject(new Error('Request error with status ' + request.status));
+      }
+    };
+
+    request.onerror = function(e) {
+      reject(e);
+    };
+
+    request.send();
+  });
+}
+
+function loadStyle(url) {
+  return new Promise(function(resolve, reject) {
+    var request = new XMLHttpRequest();
+    request.open('GET', url, true);
+
+    request.onload = function() {
+      if (request.status >= 200 && request.status < 400) {
+        var data = request.responseText;
+
+        sass.compile(data, function(result) {
+          // inject it into the head as a style tag
+          var style = document.createElement('style');
+          style.textContent = result.text;
+          style.setAttribute('type', 'text/css');
+          style.setAttribute('data-type', 'text/scss');
+          style.setAttribute('data-href', url);
+          head.appendChild(style);
+          resolve('');
+        });
+      } else {
+        reject(new Error('Request error with status ' + request.status));
+      }
+    };
+
+    request.onerror = function(e) {
+      reject(e);
+    };
+
+    request.send();
+  });
+};
