@@ -91,6 +91,22 @@ function fetchText(url) {
   });
 }
 
+
+function base64(text) {
+  return window.btoa(text);
+}
+
+// inject style into the head as a style tag
+// Note: use link and data-URI to allow source maps to work, unlike <style>
+function injectStyle(css, url) {
+  var base64css = base64(css);
+  var link = document.createElement('link');
+  link.rel = 'stylesheet';
+  link.href= 'data:text/css;charset=utf-8;base64,' + base64css;
+  head.appendChild(link);
+}
+
+/*
 // inject style into the head as a style tag
 function injectStyle(css, url) {
   var style = document.createElement('style');
@@ -100,11 +116,14 @@ function injectStyle(css, url) {
   style.setAttribute('data-href', url);
   head.appendChild(style);
 }
+*/
 
 function loadStyle(url) {
   return fetchText(url).then(function(data) {
     return new Promise(function(resolve, reject) {
-      sass.compile(data, function(result) {
+      sass.compile(data, {
+        inputPath: url
+      }, function(result) {
         var successful = result.status === 0;
         if (successful) {
           injectStyle(result.text, url);
