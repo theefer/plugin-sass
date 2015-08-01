@@ -2,6 +2,17 @@ if (typeof window !== 'undefined') {
   var Sass = require('sass.js/dist/sass');
   var sass = new Sass();
 
+  // Turn on source maps
+  sass.options({
+    // Embed included contents in maps
+    sourceMapContents: true,
+    // Embed sourceMappingUrl as data uri
+    sourceMapEmbed: true,
+    // Disable sourceMappingUrl in css output
+    sourceMapOmitUrl: false
+  });
+
+  // Resolve @imports
   sass.importer(function(request, done) {
     // TODO: relative to importing sass file
     //       see https://github.com/medialize/sass.js#using-the-sassjs-api
@@ -99,7 +110,6 @@ function loadStyle(url) {
           injectStyle(result.text, url);
           resolve('');
         } else {
-          // FIXME: not properly bubbling to System?
           reject(result.formatted);
         }
       });
