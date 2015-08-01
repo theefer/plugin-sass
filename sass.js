@@ -80,34 +80,23 @@ function fetchText(url) {
   });
 }
 
+// inject style into the head as a style tag
+function injectStyle(css, url) {
+  var style = document.createElement('style');
+  style.textContent = css;
+  style.setAttribute('type', 'text/css');
+  style.setAttribute('data-type', 'text/scss');
+  style.setAttribute('data-href', url);
+  head.appendChild(style);
+}
+
 function loadStyle(url) {
-  return new Promise(function(resolve, reject) {
-    var request = new XMLHttpRequest();
-    request.open('GET', url, true);
-
-    request.onload = function() {
-      if (request.status >= 200 && request.status < 400) {
-        var data = request.responseText;
-
-        sass.compile(data, function(result) {
-          // inject it into the head as a style tag
-          var style = document.createElement('style');
-          style.textContent = result.text;
-          style.setAttribute('type', 'text/css');
-          style.setAttribute('data-type', 'text/scss');
-          style.setAttribute('data-href', url);
-          head.appendChild(style);
-          resolve('');
-        });
-      } else {
-        reject(new Error('Request error with status ' + request.status));
-      }
-    };
-
-    request.onerror = function(e) {
-      reject(e);
-    };
-
-    request.send();
+  return fetchText(url).then(function(data) {
+    return new Promise(function(resolve, reject) {
+      sass.compile(data, function(result) {
+        injectStyle(result.text, url);
+        resolve('');
+      });
+    });
   });
 };
