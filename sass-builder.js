@@ -1,15 +1,18 @@
 // TODO: or use more efficient node-sass (issues with installing it via jspm)
 var Sass = require('sass.js/dist/sass.sync');
 
+// TODO: allow building as external file
+
 // Turn on source maps
-// Sass.options({
-//     // Embed included contents in maps
-//     sourceMapContents: true,
-//     // Embed sourceMappingUrl as data uri
-//     sourceMapEmbed: true,
-//     // Disable sourceMappingUrl in css output
-//     sourceMapOmitUrl: false
-// });
+// FIXME: embedded vs as external file?
+Sass.options({
+    // Embed included contents in maps
+    sourceMapContents: true,
+    // Embed sourceMappingUrl as data uri
+    sourceMapEmbed: true,
+    // Disable sourceMappingUrl in css output
+    sourceMapOmitUrl: false
+});
 
 // Resolve @imports
 var fs = require('fs');
@@ -37,12 +40,11 @@ function escape(source) {
 		.replace(/[\u2029]/g, "\\u2029");
 }
 
+// FIXME: use link rel=stylesheet to make sourcemaps work?
 var cssInject = "(function(c){var d=document,a='appendChild',i='styleSheet',s=d.createElement('style');s.type='text/css';d.getElementsByTagName('head')[0][a](s);s[i]?s[i].cssText=c:s[a](d.createTextNode(c));})";
 
 function compileSass(source, url) {
   return new Promise(function(resolve, reject) {
-    // FIXME: resolve imports
-    // FIXME: source maps etc?
     Sass.compile(source, {
       inputPath: url.replace('file://', '')
     }, function(result) {
