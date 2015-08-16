@@ -15,7 +15,7 @@ var Sass = require('sass.js/dist/sass.sync');
 var fs = require('fs');
 Sass.importer(function(request, done) {
     var url = request.current;
-    fs.readFile(url, function(err, text) {
+    fs.readFile(url, {encoding: 'UTF-8'}, function(err, text) {
         if (err) {
             done({path: url, error: err.message});
         } else {
