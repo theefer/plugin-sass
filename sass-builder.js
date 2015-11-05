@@ -46,7 +46,8 @@ var cssInject = "(function(c){var d=document,a='appendChild',i='styleSheet',s=d.
 function compileSass(source, url) {
   return new Promise(function(resolve, reject) {
     Sass.compile(source, {
-      inputPath: url.replace('file://', '')
+      inputPath: url.replace('file://', ''),
+      indentedSyntax: url.split('.').slice(-1)[0] == 'sass'
     }, function(result) {
       var successful = result.status === 0;
       if (successful) {
