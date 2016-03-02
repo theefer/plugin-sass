@@ -61,7 +61,7 @@ function compileSass(source, url) {
 
 module.exports = function(loads, opts) {
   var stubDefines = loads.map(function(load) {
-    return "System\.register('" + load.name + "', [], false, function() {});";
+    return (opts.systemGlobal || 'System') + ".register('" + load.name + "', [], false, function() {});";
   }).join('\n');
 
   return Promise.all(loads.map(function(load) {
