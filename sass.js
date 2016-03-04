@@ -122,7 +122,8 @@ function loadStyle(url) {
   return fetchText(url).then(function(data) {
     return new Promise(function(resolve, reject) {
       sass.compile(data, {
-        inputPath: url
+        inputPath: url,
+        indentedSyntax: url.split('.').slice(-1)[0] == 'sass'
       }, function(result) {
         var successful = result.status === 0;
         if (successful) {
